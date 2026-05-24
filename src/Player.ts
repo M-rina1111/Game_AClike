@@ -1,0 +1,80 @@
+import * as THREE from 'three';
+import { InputManager } from './InputManager';
+
+export class Player {
+  public mesh: THREE.Mesh;
+  public velocity: THREE.Vector3 = new THREE.Vector3();
+  private speed = 25.0;
+  private jumpForce = 20.0;
+  private gravity = 50.0;
+  private isGrounded = true;
+
+  constructor(scene: THREE.Scene) {
+    // Player AC represented as a Box
+    const geometry = new THREE.BoxGeometry(2, 3, 2);
+    const material = new THREE.MeshStandardMaterial({ 
+      color: 0xaaaaaa,
+      roughness: 0.5,
+      metalness: 0.8
+    });
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.position.y = 1.5; // Half of height to rest on ground
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+    scene.add(this.mesh);
+  }
+
+  public update(deltaTime: number, input: InputManager, cameraYaw: number) {
+    // Determine movement direction based on camera yaw
+    const moveDir = new THREE.Vector3(0, 0, 0);
+    
+    if (input.keys['KeyW']) moveDir.z -= 1;
+    if (input.keys['KeyS']) moveDir.z += 1;
+    if (input.keys['KeyA']) moveDir.x -= 1;
+    if (input.keys['KeyD']) moveDir.x += 1;
+
+    if (moveDir.lengthSq() > 0) {
+      moveDir.normalize();
+      // Rotate movement vector to match camera yaw
+      moveDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw);
+    }
+
+    // Apply movement velocity (horizontal)
+    this.velocity.x = moveDir.x * this.speed;
+    this.velocity.z = moveDir.z * this.speed;
+
+    // Jumping
+    if (input.jumpPressed && this.isGrounded) {
+      this.velocity.y = this.jumpForce;
+      this.isGrounded = false;
+    }
+
+    // Apply Gravity
+    if (!this.isGrounded) {
+      this.velocity.y -= this.gravity * deltaTime;
+    }
+
+    // Update position
+    this.mesh.position.x += this.velocity.x * deltaTime;
+    this.mesh.position.y += this.velocity.y * deltaTime;
+    this.mesh.position.z += this.velocity.z * deltaTime;
+
+    // Floor collision
+    if (this.mesh.position.y < 1.5) {
+      this.mesh.position.y = 1.5;
+      this.velocity.y = 0;
+      this.isGrounded = true;
+    }
+
+    // Optional: Rotate mesh to face movement direction
+    if (moveDir.lengthSq() > 0) {
+      const targetRotation = Math.atan2(moveDir.x, moveDir.z);
+      // Smooth rotation could be added here
+      this.mesh.rotation.y = targetRotation;
+    }
+  }
+
+  public getPosition(): THREE.Vector3 {
+    return this.mesh.position;
+  }
+}

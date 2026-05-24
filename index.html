@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARMORED CORE VI TPS PROTOTYPE</title>
+    <!-- Use a modern, futuristic-looking font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"></div>
+    
+    <!-- UI Overlay -->
+    <div id="ui-layer">
+      <!-- Reticle -->
+      <div id="reticle">
+        <div class="reticle-part top"></div>
+        <div class="reticle-part bottom"></div>
+        <div class="reticle-part left"></div>
+        <div class="reticle-part right"></div>
+        <div class="reticle-center"></div>
+      </div>
+      
+      <!-- Lock-on Site (Moved dynamically by JS) -->
+      <div id="lockon-site" style="display: none;">
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+        <div class="target-info">TARGET</div>
+      </div>
+
+      <!-- Target AP HUD -->
+      <div id="hud-top-center" style="display: none;">
+        <div class="target-ap-box">
+          <div class="target-ap-label">TARGET AP</div>
+          <div class="target-ap-value" id="target-ap-value">3000</div>
+          <div class="target-ap-bar-container">
+            <div class="target-ap-bar" id="target-ap-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status HUD -->
+      <div id="hud-bottom-right">
+        <div class="hud-box">
+          <div class="hud-label">EXPANSION</div>
+          <div class="hud-value" id="barrier-status">READY (CTRL)</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">WEAPON</div>
+          <div class="hud-value" id="weapon-status">RIFLE (CLICK)</div>
+        </div>
+      </div>
+
+      <div id="hud-bottom-left">
+        <div class="ap-box">
+          <div class="ap-label">AP</div>
+          <div class="ap-value" id="ap-value">8000</div>
+          <div class="ap-bar-container">
+            <div class="ap-bar" id="ap-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Overlay (Pointer Lock instruction) -->
+      <div id="start-screen">
+        <h1>SYSTEM INITIATED</h1>
+        <p>CLICK TO START COMBAT MODE</p>
+        <p class="controls">WASD: MOVE | SPACE: JUMP | MOUSE: AIM | CLICK: SHOOT | CTRL: BARRIER</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

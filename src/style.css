@@ -1,0 +1,298 @@
+:root {
+  --primary-color: #ff5500;
+  --secondary-color: #00ffff;
+  --bg-dark: rgba(10, 15, 20, 0.7);
+  --ui-font: 'Rajdhani', sans-serif;
+  --header-font: 'Orbitron', sans-serif;
+  --glow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+  --glow-cyan: 0 0 10px var(--secondary-color), 0 0 20px var(--secondary-color);
+  --glow-red: 0 0 10px #ff3333, 0 0 20px #ff3333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+  font-family: var(--ui-font);
+  color: #fff;
+  user-select: none;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Reticle (Center crosshair) */
+#reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+}
+
+.reticle-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background-color: var(--secondary-color);
+  border-radius: 50%;
+  box-shadow: var(--glow-cyan);
+}
+
+.reticle-part {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.reticle-part.top { top: 0; left: 19px; width: 2px; height: 10px; }
+.reticle-part.bottom { bottom: 0; left: 19px; width: 2px; height: 10px; }
+.reticle-part.left { left: 0; top: 19px; width: 10px; height: 2px; }
+.reticle-part.right { right: 0; top: 19px; width: 10px; height: 2px; }
+
+/* Lock-on Site */
+#lockon-site {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 85, 0, 0.3);
+  box-shadow: inset 0 0 15px rgba(255, 85, 0, 0.2);
+  transition: width 0.1s, height 0.1s;
+}
+
+#lockon-site.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-color), inset 0 0 20px rgba(255, 85, 0, 0.4);
+}
+
+#lockon-site .corner {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 3px solid var(--primary-color);
+}
+
+.corner.top-left { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+.corner.top-right { top: -3px; right: -3px; border-left: none; border-bottom: none; }
+.corner.bottom-left { bottom: -3px; left: -3px; border-right: none; border-top: none; }
+.corner.bottom-right { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+.target-info {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: var(--primary-color);
+  font-family: var(--header-font);
+  letter-spacing: 2px;
+  text-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Target AP HUD */
+#hud-top-center {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.target-ap-box {
+  background: transparent;
+  width: 400px;
+  text-align: center;
+}
+
+.target-ap-label {
+  font-family: var(--header-font);
+  font-size: 12px;
+  color: #ff3333;
+  letter-spacing: 3px;
+}
+
+.target-ap-value {
+  font-family: var(--header-font);
+  font-size: 24px;
+  color: #fff;
+  text-shadow: var(--glow-red);
+  font-weight: bold;
+}
+
+.target-ap-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 51, 51, 0.2);
+  margin-top: 5px;
+  box-shadow: 0 0 5px rgba(255, 51, 51, 0.2);
+}
+
+.target-ap-bar {
+  width: 100%;
+  height: 100%;
+  background-color: #ff3333;
+  box-shadow: 0 0 10px #ff3333;
+  transition: width 0.1s;
+}
+
+/* Status HUD */
+#hud-bottom-right {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.hud-box {
+  background: var(--bg-dark);
+  border-left: 4px solid var(--secondary-color);
+  padding: 5px 15px;
+  width: 250px;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.hud-label {
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+.hud-value {
+  font-family: var(--header-font);
+  font-size: 18px;
+  color: var(--secondary-color);
+  text-shadow: var(--glow-cyan);
+}
+
+.hud-value.used {
+  color: #666;
+  text-shadow: none;
+}
+
+/* AP HUD */
+#hud-bottom-left {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+}
+
+.ap-box {
+  background: transparent;
+  width: 300px;
+}
+
+.ap-label {
+  font-family: var(--header-font);
+  font-size: 14px;
+  color: #ccc;
+  letter-spacing: 2px;
+  margin-bottom: -5px;
+}
+
+.ap-value {
+  font-family: var(--header-font);
+  font-size: 42px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  font-weight: 900;
+}
+
+.ap-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-top: 5px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.ap-bar {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 0 0 10px #fff;
+  transition: width 0.1s;
+}
+
+/* Start Screen */
+#start-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+#start-screen h1 {
+  font-family: var(--header-font);
+  color: var(--secondary-color);
+  font-size: 48px;
+  letter-spacing: 5px;
+  text-shadow: var(--glow-cyan);
+  margin-bottom: 10px;
+}
+
+#start-screen p {
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+  animation: blink 1.5s infinite;
+}
+
+#start-screen .controls {
+  font-size: 14px;
+  color: #aaa;
+  animation: none;
+  background: var(--bg-dark);
+  padding: 10px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
