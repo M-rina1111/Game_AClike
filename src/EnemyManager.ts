@@ -28,7 +28,7 @@ export class EnemyManager {
       const radius = 20 + Math.random() * 80;
       
       mesh.position.x = Math.cos(angle) * radius;
-      mesh.position.y = 2.0; 
+      mesh.position.y = 3.0; 
       mesh.position.z = Math.sin(angle) * radius;
 
       mesh.castShadow = true;

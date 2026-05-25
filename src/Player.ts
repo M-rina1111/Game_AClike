@@ -23,7 +23,7 @@ export class Player {
       metalness: 0.8
     });
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.y = 1.5; // Half of height to rest on ground
+    this.mesh.position.y = 3.0; // Half of height (2 * 1.5) to rest on ground
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
     scene.add(this.mesh);
@@ -65,11 +65,18 @@ export class Player {
     this.mesh.position.z += this.velocity.z * deltaTime;
 
     // Floor collision
-    if (this.mesh.position.y < 1.5) {
-      this.mesh.position.y = 1.5;
+    if (this.mesh.position.y < 3.0) {
+      this.mesh.position.y = 3.0;
       this.velocity.y = 0;
       this.isGrounded = true;
     }
+
+    // Map boundary collision (500x500 map -> limit to -245 to 245)
+    const mapLimit = 245;
+    if (this.mesh.position.x > mapLimit) this.mesh.position.x = mapLimit;
+    if (this.mesh.position.x < -mapLimit) this.mesh.position.x = -mapLimit;
+    if (this.mesh.position.z > mapLimit) this.mesh.position.z = mapLimit;
+    if (this.mesh.position.z < -mapLimit) this.mesh.position.z = -mapLimit;
 
     // Optional: Rotate mesh to face movement direction
     if (moveDir.lengthSq() > 0) {
