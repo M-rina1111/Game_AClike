@@ -116,7 +116,7 @@ export class WeaponSystem {
   }
 
   // Shoot Missile
-  public shootMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
+  public shootMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, _target: THREE.Vector3 | THREE.Mesh | null) {
     if (this.missileCooldown > 0) return;
     this.missileCooldown = 5.0; // 5s cooldown
 

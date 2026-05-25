@@ -9,13 +9,14 @@ import { TargetingSystem } from './TargetingSystem';
 import { WeaponSystem } from './WeaponSystem';
 import { BarrierSystem } from './BarrierSystem';
 
-enum GameState {
-  START,
-  PLAYING,
-  PAUSED,
-  CLEARED,
-  GAMEOVER
-}
+const GameState = {
+  START: 0,
+  PLAYING: 1,
+  PAUSED: 2,
+  CLEARED: 3,
+  GAMEOVER: 4
+} as const;
+type GameState = typeof GameState[keyof typeof GameState];
 
 let currentState = GameState.START;
 let startTime = 0;
@@ -64,7 +65,7 @@ scene.add(ground);
 // Systems
 const inputManager = new InputManager();
 const player = new Player(scene);
-const cameraController = new CameraController(camera, player.mesh);
+const cameraController = new CameraController(camera);
 const enemyManager = new EnemyManager(scene, 10);
 const targetingSystem = new TargetingSystem(camera);
 const weaponSystem = new WeaponSystem();
