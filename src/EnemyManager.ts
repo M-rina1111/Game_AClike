@@ -12,14 +12,16 @@ export class EnemyManager {
   public enemies: EnemyData[] = [];
 
   constructor(scene: THREE.Scene, count: number = 10) {
-    const geometry = new THREE.BoxGeometry(3, 4, 3);
-    const material = new THREE.MeshStandardMaterial({ 
+    const geometry = new THREE.OctahedronGeometry(2, 0);
+    geometry.scale(1, 1.5, 1);
+    const baseMaterial = new THREE.MeshStandardMaterial({ 
       color: 0xff3333,
-      roughness: 0.6,
-      metalness: 0.2
+      roughness: 0.3,
+      metalness: 0.8
     });
 
     for (let i = 0; i < count; i++) {
+      const material = baseMaterial.clone();
       const mesh = new THREE.Mesh(geometry, material);
       
       const angle = Math.random() * Math.PI * 2;
@@ -81,7 +83,7 @@ export class EnemyManager {
 
         const direction = new THREE.Vector3().subVectors(targetPos, origin).normalize();
 
-        weapons.shoot(scene, origin, direction, targetPos, true);
+        weapons.shootRifle(scene, origin, direction, targetPos, true);
         enemy.fireTimer = 1.0;
       }
     }

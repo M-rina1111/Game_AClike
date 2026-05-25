@@ -4,13 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARMORED CORE VI TPS PROTOTYPE</title>
-    <!-- Use a modern, futuristic-looking font -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app"></div>
     
-    <!-- UI Overlay -->
     <div id="ui-layer">
       <!-- Reticle -->
       <div id="reticle">
@@ -21,7 +19,7 @@
         <div class="reticle-center"></div>
       </div>
       
-      <!-- Lock-on Site (Moved dynamically by JS) -->
+      <!-- Lock-on Site -->
       <div id="lockon-site" style="display: none;">
         <div class="corner top-left"></div>
         <div class="corner top-right"></div>
@@ -41,18 +39,43 @@
         </div>
       </div>
 
-      <!-- Status HUD -->
+      <!-- Status HUD Right (Weapons & Expansion) -->
       <div id="hud-bottom-right">
+        <!-- EXPANSION -->
         <div class="hud-box">
-          <div class="hud-label">EXPANSION</div>
-          <div class="hud-value" id="barrier-status">READY (CTRL)</div>
+          <div class="hud-label">EXPANSION (CTRL)</div>
+          <div class="hud-value" id="barrier-status">READY</div>
         </div>
+        
+        <!-- MELEE -->
         <div class="hud-box">
-          <div class="hud-label">WEAPON</div>
-          <div class="hud-value" id="weapon-status">RIFLE (CLICK)</div>
+          <div class="hud-label">ASSAULT ARMOR (CTRL+SHIFT)</div>
+          <div class="hud-value" id="melee-status">READY</div>
+          <div class="weapon-bar-container"><div class="weapon-bar" id="melee-bar"></div></div>
+        </div>
+
+        <!-- MISSILE -->
+        <div class="hud-box">
+          <div class="hud-label">MISSILE (Q)</div>
+          <div class="hud-value" id="missile-status">READY</div>
+          <div class="weapon-bar-container"><div class="weapon-bar" id="missile-bar"></div></div>
+        </div>
+
+        <!-- MACHINE GUN -->
+        <div class="hud-box">
+          <div class="hud-label">MACHINE GUN (R-CLICK)</div>
+          <div class="hud-value" id="mg-status">HEAT: 0%</div>
+          <div class="weapon-bar-container"><div class="weapon-bar" id="mg-bar" style="width: 0%"></div></div>
+        </div>
+
+        <!-- RIFLE -->
+        <div class="hud-box">
+          <div class="hud-label">RIFLE (L-CLICK)</div>
+          <div class="hud-value">ACTIVE</div>
         </div>
       </div>
 
+      <!-- AP HUD Left -->
       <div id="hud-bottom-left">
         <div class="ap-box">
           <div class="ap-label">AP</div>
@@ -63,11 +86,43 @@
         </div>
       </div>
 
-      <!-- Start Overlay (Pointer Lock instruction) -->
-      <div id="start-screen">
+      <!-- Start Screen -->
+      <div id="start-screen" class="screen-overlay">
         <h1>SYSTEM INITIATED</h1>
         <p>CLICK TO START COMBAT MODE</p>
-        <p class="controls">WASD: MOVE | SPACE: JUMP | MOUSE: AIM | CLICK: SHOOT | CTRL: BARRIER</p>
+        <p class="controls">WASD: MOVE | SPACE: JUMP | MOUSE: AIM | L-CLICK: RIFLE | R-CLICK: MACHINE GUN | Q: MISSILE | CTRL+SHIFT: MELEE | CTRL (Release): BARRIER</p>
+      </div>
+
+      <!-- Pause Screen -->
+      <div id="pause-screen" class="screen-overlay" style="display: none;">
+        <h1>PAUSED</h1>
+        <div class="stats-panel">
+          <p>ENEMIES REMAINING: <span id="pause-enemies">10</span></p>
+          <p>AP: <span id="pause-ap">8000</span></p>
+        </div>
+        <button id="btn-resume" class="ui-button">RESUME (Click Screen)</button>
+        <button id="btn-restart" class="ui-button">RESTART MISSION</button>
+      </div>
+
+      <!-- Clear Screen -->
+      <div id="clear-screen" class="screen-overlay" style="display: none;">
+        <h1>TARGET VERIFIED DESTROYED</h1>
+        <h2>MISSION CLEARED</h2>
+        <div class="stats-panel">
+          <p>CLEAR TIME: <span id="clear-time">00:00</span></p>
+          <p>DAMAGE TAKEN: <span id="clear-damage">0</span> AP</p>
+        </div>
+        <button id="btn-finish-restart" class="ui-button">RESTART MISSION</button>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="gameover-screen" class="screen-overlay" style="display: none;">
+        <h1 class="danger-text">SYSTEM OFFLINE</h1>
+        <h2 class="danger-text">MISSION FAILED</h2>
+        <div class="stats-panel danger-panel">
+          <p>ENEMIES REMAINING: <span id="gameover-enemies">10</span></p>
+        </div>
+        <button id="btn-gameover-restart" class="ui-button danger-button">RESTART MISSION</button>
       </div>
     </div>
 

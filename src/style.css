@@ -247,8 +247,26 @@ body, html {
   transition: width 0.1s;
 }
 
-/* Start Screen */
-#start-screen {
+.weapon-bar-container {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-top: 5px;
+}
+
+.weapon-bar {
+  width: 100%;
+  height: 100%;
+  background-color: var(--secondary-color);
+  transition: width 0.1s;
+}
+
+.weapon-bar.overheat {
+  background-color: #ff3333;
+}
+
+/* Screens */
+.screen-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -260,12 +278,10 @@ body, html {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: opacity 0.3s;
+  pointer-events: auto; /* Clickable */
 }
 
-#start-screen h1 {
+.screen-overlay h1 {
   font-family: var(--header-font);
   color: var(--secondary-color);
   font-size: 48px;
@@ -274,25 +290,96 @@ body, html {
   margin-bottom: 10px;
 }
 
-#start-screen p {
+.screen-overlay h2 {
+  font-family: var(--header-font);
+  color: var(--primary-color);
+  font-size: 32px;
+  letter-spacing: 5px;
+  text-shadow: var(--glow);
+  margin-bottom: 20px;
+}
+
+.screen-overlay p {
   font-size: 18px;
   color: #fff;
   letter-spacing: 2px;
   margin-bottom: 40px;
-  animation: blink 1.5s infinite;
 }
 
-#start-screen .controls {
+#start-screen p:not(.controls) {
+  animation: blink 1.5s infinite;
+  cursor: pointer;
+}
+
+.controls {
   font-size: 14px;
   color: #aaa;
-  animation: none;
   background: var(--bg-dark);
   padding: 10px 20px;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 4px;
 }
 
+.stats-panel {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid var(--secondary-color);
+  padding: 20px 40px;
+  margin-bottom: 40px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.stats-panel p {
+  margin: 10px 0;
+  font-family: var(--header-font);
+  font-size: 24px;
+}
+
+.stats-panel span {
+  color: var(--secondary-color);
+}
+
+.ui-button {
+  font-family: var(--header-font);
+  font-size: 18px;
+  color: #000;
+  background-color: var(--secondary-color);
+  border: none;
+  padding: 10px 30px;
+  margin: 10px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  box-shadow: 0 0 10px var(--secondary-color);
+  transition: all 0.2s;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.ui-button:hover {
+  background-color: #fff;
+  box-shadow: 0 0 20px #fff;
+}
+
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+.danger-text {
+  color: #ff3333 !important;
+  text-shadow: var(--glow-red) !important;
+}
+
+.danger-panel {
+  border-color: #ff3333;
+  background: rgba(255, 51, 51, 0.05);
+  box-shadow: 0 0 10px rgba(255, 51, 51, 0.1);
+}
+
+.danger-panel span {
+  color: #ff3333;
+}
+
+.danger-button {
+  background-color: #ff3333;
+  box-shadow: 0 0 10px #ff3333;
 }

@@ -76,5 +76,7 @@ export class TargetingSystem {
       this.uiSite.style.display = 'none';
       this.uiSite.classList.remove('active');
     }
+
+    return this.currentTarget;
   }
 }

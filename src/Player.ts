@@ -4,17 +4,22 @@ import { InputManager } from './InputManager';
 export class Player {
   public mesh: THREE.Mesh;
   public velocity: THREE.Vector3 = new THREE.Vector3();
+  public ap: number = 8000;
+  public maxAp: number = 8000;
   private speed = 25.0;
   private jumpForce = 20.0;
   private gravity = 50.0;
   private isGrounded = true;
 
   constructor(scene: THREE.Scene) {
-    // Player AC represented as a Box
-    const geometry = new THREE.BoxGeometry(2, 3, 2);
+    // Player AC represented as an Octahedron
+    const geometry = new THREE.OctahedronGeometry(2, 0); // Radius 2, detail 0
+    // Optional: scale to make it taller like a diamond
+    geometry.scale(1, 1.5, 1);
+    
     const material = new THREE.MeshStandardMaterial({ 
       color: 0xaaaaaa,
-      roughness: 0.5,
+      roughness: 0.3,
       metalness: 0.8
     });
     this.mesh = new THREE.Mesh(geometry, material);
@@ -76,5 +81,9 @@ export class Player {
 
   public getPosition(): THREE.Vector3 {
     return this.mesh.position;
+  }
+
+  public takeDamage(amount: number) {
+    this.ap = Math.max(0, this.ap - amount);
   }
 }
