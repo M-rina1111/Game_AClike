@@ -18,7 +18,7 @@ const GameState = {
 } as const;
 type GameState = typeof GameState[keyof typeof GameState];
 
-let currentState = GameState.START;
+let currentState: GameState = GameState.START;
 let startTime = 0;
 let totalDamageTaken = 0;
 
