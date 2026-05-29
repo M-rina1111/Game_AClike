@@ -126,7 +126,7 @@ export class WeaponSystem {
   }
 
   // Shoot Missile
-  public shootMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
+  public shootMissile(_scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
     if (this.missileCooldown > 0) return;
     this.missileCooldown = 5.0; // 5s cooldown
 
@@ -141,7 +141,7 @@ export class WeaponSystem {
     }
   }
 
-  private spawnMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
+  private spawnMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, _target: THREE.Vector3 | THREE.Mesh | null) {
     const mesh = new THREE.Mesh(this.missileGeo, this.missileMat);
     
     const initialDir = direction.clone();
