@@ -12,6 +12,7 @@ export class InputManager {
   public barrierTriggered = false; // changed to triggered on keyup
   public meleeTriggered = false;
   public missileTriggered = false;
+  public quickBoostTriggered = false;
   private lastMeleeTime: number = 0;
 
   constructor() {
@@ -23,9 +24,13 @@ export class InputManager {
       this.keys[e.code] = true;
       if (e.code === 'Space') this.jumpPressed = true;
       if (e.code === 'KeyQ') this.missileTriggered = true;
-      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && (this.keys['ControlLeft'] || this.keys['ControlRight'])) {
-        this.meleeTriggered = true;
-        this.lastMeleeTime = performance.now();
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+        if (this.keys['ControlLeft'] || this.keys['ControlRight']) {
+          this.meleeTriggered = true;
+          this.lastMeleeTime = performance.now();
+        } else {
+          this.quickBoostTriggered = true;
+        }
       }
     });
 
@@ -76,6 +81,7 @@ export class InputManager {
     this.barrierTriggered = false;
     this.meleeTriggered = false;
     this.missileTriggered = false;
+    this.quickBoostTriggered = false;
     this.justClickedLeft = false;
     this.justClickedRight = false;
   }

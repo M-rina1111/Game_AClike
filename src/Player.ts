@@ -6,6 +6,10 @@ export class Player {
   public velocity: THREE.Vector3 = new THREE.Vector3();
   public ap: number = 8000;
   public maxAp: number = 8000;
+  
+  private qbVelocity: THREE.Vector3 = new THREE.Vector3();
+  private qbCooldown: number = 0;
+
   private speed = 25.0;
   private jumpForce = 20.0;
   private gravity = 50.0;
@@ -44,6 +48,26 @@ export class Player {
       moveDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw);
     }
 
+    // Quick Boost Logic
+    if (this.qbCooldown > 0) this.qbCooldown -= deltaTime;
+    
+    if (input.quickBoostTriggered && this.qbCooldown <= 0) {
+      this.qbCooldown = 0.6; // 0.6s cooldown
+      const qbForce = 120.0;
+      
+      if (moveDir.lengthSq() > 0) {
+        this.qbVelocity.copy(moveDir).multiplyScalar(qbForce);
+      } else {
+        // Dodge forward if no input
+        const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw);
+        this.qbVelocity.copy(forward).multiplyScalar(qbForce);
+      }
+    }
+
+    // Damping (friction) for Quick Boost
+    const friction = 8.0; 
+    this.qbVelocity.lerp(new THREE.Vector3(0, 0, 0), deltaTime * friction);
+
     // Apply movement velocity (horizontal)
     this.velocity.x = moveDir.x * this.speed;
     this.velocity.z = moveDir.z * this.speed;
@@ -60,9 +84,9 @@ export class Player {
     }
 
     // Update position
-    this.mesh.position.x += this.velocity.x * deltaTime;
+    this.mesh.position.x += (this.velocity.x + this.qbVelocity.x) * deltaTime;
     this.mesh.position.y += this.velocity.y * deltaTime;
-    this.mesh.position.z += this.velocity.z * deltaTime;
+    this.mesh.position.z += (this.velocity.z + this.qbVelocity.z) * deltaTime;
 
     // Floor collision
     if (this.mesh.position.y < 3.0) {

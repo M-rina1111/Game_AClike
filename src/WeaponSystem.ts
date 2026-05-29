@@ -10,6 +10,15 @@ interface Bullet {
   isMissile?: boolean;
   trailPositions?: THREE.Vector3[];
   trailLine?: THREE.Line;
+  speed?: number;
+  hasLostTarget?: boolean;
+}
+
+interface MissileQueueItem {
+  origin: THREE.Vector3;
+  direction: THREE.Vector3;
+  target: THREE.Vector3 | THREE.Mesh | null;
+  delay: number;
 }
 
 interface Explosion {
@@ -21,6 +30,7 @@ interface Explosion {
 export class WeaponSystem {
   private bullets: Bullet[] = [];
   private explosions: Explosion[] = [];
+  private missileQueue: MissileQueueItem[] = [];
 
   // Geometries & Materials
   private coneGeo = new THREE.ConeGeometry(0.5, 3, 8);
@@ -116,29 +126,43 @@ export class WeaponSystem {
   }
 
   // Shoot Missile
-  public shootMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, _target: THREE.Vector3 | THREE.Mesh | null) {
+  public shootMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
     if (this.missileCooldown > 0) return;
     this.missileCooldown = 5.0; // 5s cooldown
 
+    // Queue 5 missiles with a slight delay between them
+    for (let i = 0; i < 5; i++) {
+      this.missileQueue.push({
+        origin: origin.clone(),
+        direction: direction.clone(),
+        target: target,
+        delay: i * 0.15 // 150ms delay between each missile
+      });
+    }
+  }
+
+  private spawnMissile(scene: THREE.Scene, origin: THREE.Vector3, direction: THREE.Vector3, target: THREE.Vector3 | THREE.Mesh | null) {
     const mesh = new THREE.Mesh(this.missileGeo, this.missileMat);
     
-    // Shoot upwards initially for missile trajectory
     const initialDir = direction.clone();
-    initialDir.y += 1.0; 
+    initialDir.y += 1.5; // Shoot higher initially
+    // Add some random spread
+    initialDir.x += (Math.random() - 0.5) * 0.8;
+    initialDir.z += (Math.random() - 0.5) * 0.8;
     initialDir.normalize();
 
     mesh.position.copy(origin).addScaledVector(initialDir, 3);
-    const velocity = new THREE.Vector3().copy(initialDir).multiplyScalar(80.0); // slower initially
+    const speed = 20.0; // Start slow
+    const velocity = new THREE.Vector3().copy(initialDir).multiplyScalar(speed);
 
-    // Setup Trail
     const trailPositions = [mesh.position.clone()];
     const trailGeo = new THREE.BufferGeometry().setFromPoints(trailPositions);
     const trailLine = new THREE.Line(trailGeo, this.trailMat);
     scene.add(trailLine);
 
     scene.add(mesh);
-    // Missile damage: 200
-    this.bullets.push({ mesh, velocity, life: 4.0, isEnemy: false, damage: 200, isMissile: true, trailPositions, trailLine });
+    // Lower damage per missile since we fire 5
+    this.bullets.push({ mesh, velocity, life: 5.0, isEnemy: false, damage: 80, isMissile: true, trailPositions, trailLine, speed: speed, hasLostTarget: false });
   }
 
   // Melee Assault Armor
@@ -188,6 +212,16 @@ export class WeaponSystem {
     if (this.missileCooldown > 0) this.missileCooldown -= deltaTime;
     if (this.meleeCooldown > 0) this.meleeCooldown -= deltaTime;
 
+    // Process Missile Queue
+    for (let i = this.missileQueue.length - 1; i >= 0; i--) {
+      const item = this.missileQueue[i];
+      item.delay -= deltaTime;
+      if (item.delay <= 0) {
+        this.spawnMissile(scene, item.origin, item.direction, item.target);
+        this.missileQueue.splice(i, 1);
+      }
+    }
+
     // Update Explosions
     for (let i = this.explosions.length - 1; i >= 0; i--) {
       const exp = this.explosions[i];
@@ -218,21 +252,42 @@ export class WeaponSystem {
 
       // Homing logic for missile
       if (b.isMissile) {
-        // Find closest enemy if possible
-        let targetPos: THREE.Vector3 | null = null;
-        let minDist = Infinity;
-        for (const enemy of enemies) {
-          const d = b.mesh.position.distanceTo(enemy.mesh.position);
-          if (d < 100 && d < minDist) {
-            minDist = d;
-            targetPos = enemy.mesh.position;
+        if (!b.hasLostTarget) {
+          let targetPos: THREE.Vector3 | null = null;
+          let minDist = Infinity;
+          for (const enemy of enemies) {
+            const d = b.mesh.position.distanceTo(enemy.mesh.position);
+            if (d < 200 && d < minDist) {
+              minDist = d;
+              targetPos = enemy.mesh.position;
+            }
+          }
+
+          if (targetPos) {
+            const dirToTarget = new THREE.Vector3().subVectors(targetPos, b.mesh.position).normalize();
+            const currentDir = b.velocity.clone().normalize();
+            
+            // Vision cone (approx 60 degrees threshold)
+            // Give a 0.5s grace period at launch so the initial spread doesn't break the lock
+            if (b.life < 4.5 && currentDir.dot(dirToTarget) < 0.5) {
+              b.hasLostTarget = true; // Lost track of target
+            } else {
+              // Accelerate
+              b.speed = Math.min(250.0, (b.speed || 20.0) + 120.0 * deltaTime);
+              const desiredVel = dirToTarget.multiplyScalar(b.speed);
+              b.velocity.lerp(desiredVel, deltaTime * 2.5); // Steer towards target
+            }
+          } else {
+            b.hasLostTarget = true;
           }
         }
 
-        if (targetPos) {
-          const desiredVel = new THREE.Vector3().subVectors(targetPos, b.mesh.position).normalize().multiplyScalar(100.0);
-          b.velocity.lerp(desiredVel, deltaTime * 2.0); // Steer towards target
+        if (b.hasLostTarget) {
+          // Keep accelerating forward
+          b.speed = Math.min(250.0, (b.speed || 20.0) + 120.0 * deltaTime);
+          b.velocity.normalize().multiplyScalar(b.speed);
         }
+
         b.mesh.lookAt(b.mesh.position.clone().add(b.velocity));
 
         // Update trail
